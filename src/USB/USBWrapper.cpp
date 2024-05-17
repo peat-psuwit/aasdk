@@ -135,6 +135,28 @@ int USBWrapper::open(libusb_device *dev, DeviceHandle& dev_handle)
     return result;
 }
 
+int USBWrapper::wrapSysDevice(intptr_t sys_dev, std::function<void(void)> sys_dev_cleanup, DeviceHandle& dev_handle)
+{
+    libusb_device_handle *raw_handle = nullptr;
+    auto result = libusb_wrap_sys_device(usbContext_, sys_dev, &raw_handle);
+
+    if (result == 0 && raw_handle != nullptr)
+    {
+        dev_handle = DeviceHandle(raw_handle, [sys_dev_cleanup = std::move(sys_dev_cleanup)]
+            (libusb_device_handle *raw_handle) {
+                libusb_close(raw_handle);
+                sys_dev_cleanup();
+        });
+    }
+    else
+    {
+        sys_dev_cleanup();
+        dev_handle = DeviceHandle();
+    }
+
+    return result;
+}
+
 void USBWrapper::fillControlSetup(unsigned char *buffer,
     uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,
     uint16_t wLength)

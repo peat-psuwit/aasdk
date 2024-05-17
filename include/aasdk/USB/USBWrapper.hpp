@@ -58,6 +58,7 @@ public:
 
     ssize_t getDeviceList(DeviceListHandle& handle) override;
     int open(libusb_device *dev, DeviceHandle& dev_handle) override;
+    int wrapSysDevice(intptr_t sys_dev, std::function<void(void)> sys_dev_cleanup, DeviceHandle& dev_handle) override;
     void fillControlSetup(unsigned char *buffer,
         uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,
         uint16_t wLength) override;

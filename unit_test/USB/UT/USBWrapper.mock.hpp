@@ -61,6 +61,7 @@ public:
 
     MOCK_METHOD1(getDeviceList, ssize_t(DeviceListHandle& handle));
     MOCK_METHOD2(open, int(libusb_device *dev, DeviceHandle& dev_handle));
+    MOCK_METHOD3(wrapSysDevice, int(intptr_t sys_dev, std::function<void(void)> sys_dev_cleanup, DeviceHandle& dev_handle))
     MOCK_METHOD6(fillControlSetup, void(unsigned char *buffer,
         uint8_t bmRequestType, uint8_t bRequest, uint16_t wValue, uint16_t wIndex,
         uint16_t wLength));
