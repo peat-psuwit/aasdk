@@ -65,14 +65,20 @@ add_subdirectory(aasdk_proto)
 
 find_package(Boost REQUIRED COMPONENTS system log OPTIONAL_COMPONENTS unit_test_framework)
 find_package(libusb-1.0 REQUIRED)
+
+# Newer Protobuf starts requiring Abseil, and the old CMake's FindProtobuf
+# module is not updated to reflect that. Thus, prefer upstream's config module
+# if available.
+set(CMAKE_FIND_PACKAGE_PREFER_CONFIG ON)
 find_package(Protobuf REQUIRED)
+unset(CMAKE_FIND_PACKAGE_PREFER_CONFIG)
+
 find_package(OpenSSL REQUIRED)
 
 set(AASDK_PROTO_INCLUDE_DIRS ${CMAKE_CURRENT_BINARY_DIR})
 
 include_directories(${AASDK_PROTO_INCLUDE_DIRS}
                         ${Boost_INCLUDE_DIRS}
-                        ${PROTOBUF_INCLUDE_DIR}
                         ${OPENSSL_INCLUDE_DIR}
                         ${GTEST_INCLUDE_DIRS}
                         ${GMOCK_INCLUDE_DIRS}
@@ -95,7 +101,7 @@ target_link_libraries(aasdk
                         aasdk_proto
                         libusb
                         ${Boost_LIBRARIES}
-                        ${PROTOBUF_LIBRARIES}
+                        protobuf::libprotobuf
                         ${OPENSSL_LIBRARIES}
                         ${WINSOCK2_LIBRARIES})
 
